@@ -19,10 +19,10 @@ All that is required as input on the command line is the path to the CSV file co
 ## Installation
 The easiest way to install FIBS is by running the pip command:
 ```
-pip install fibs
+pip install fibs-reporter
 ```
 
-Note that FIBS requires Python >= V.3.7
+Note that FIBS requires Python >= V.3.8
 
 ## Usage
 It is assumed that the ML data to be analysed is contained within a CSV file, where each column contains a variable, and each row contains an obervation. 
