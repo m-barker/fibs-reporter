@@ -4,10 +4,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
 
-from Data_analyser import DataAnalyser
-from Audio_processor import AudioProcessor
-from Feature_extractor import FeatureExtractor
-from Model_trainer import ModelTrainer
+from src.Data_analyser import DataAnalyser
+from src.Audio_processor import AudioProcessor
+from src.Feature_extractor import FeatureExtractor
+from src.Model_trainer import ModelTrainer
 
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import recall_score
@@ -17,9 +17,9 @@ from random import randint
 from statistics import mode
 from math import sqrt
 
-from utility import is_categorical
-from utility import remove_constant_vars
-from utility import remove_nans_and_missing
+from src.utility import is_categorical
+from src.utility import remove_constant_vars
+from src.utility import remove_nans_and_missing
 
 
 class DataBuilder:
