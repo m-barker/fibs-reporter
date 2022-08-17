@@ -13,10 +13,10 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import matplotlib as mpl
 import numpy as np
 
-import src.config as config
-from src.Plotter import Plotter
-from src.utility import get_same_variables
-from src.Data_builder import DataBuilder
+import config
+from Plotter import Plotter
+from utility import get_same_variables
+from Data_builder import DataBuilder
 
 mpl.rcParams['figure.dpi'] = 300
 
@@ -310,7 +310,7 @@ class ReportBuilder:
         if audio:
             self.pdf.ln(15)
             self.pdf.set_font(*self.bold_body)
-            self.pdf.multi_cell(txt="Audio simple feature bias rating is: ", w=65, new_y="LAST")
+            self.pdf.multi_cell(txt="Audio simple feature bias rating is: ", w=60, new_y="LAST")
 
             if simple_feature_score == "red":
                 self.insert_traffic_colour("red")

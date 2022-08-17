@@ -4,10 +4,10 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
 
-from src.Data_analyser import DataAnalyser
-from src.Audio_processor import AudioProcessor
-from src.Feature_extractor import FeatureExtractor
-from src.Model_trainer import ModelTrainer
+from Data_analyser import DataAnalyser
+from Audio_processor import AudioProcessor
+from Feature_extractor import FeatureExtractor
+from Model_trainer import ModelTrainer
 
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import recall_score
@@ -17,9 +17,9 @@ from random import randint
 from statistics import mode
 from math import sqrt
 
-from src.utility import is_categorical
-from src.utility import remove_constant_vars
-from src.utility import remove_nans_and_missing
+from utility import is_categorical
+from utility import remove_constant_vars
+from utility import remove_nans_and_missing
 
 
 class DataBuilder:
@@ -509,9 +509,11 @@ class DataBuilder:
 
         if self.task == "regression":
             performance, components = modeller.evaluate_pca_model(reg=True)
+            title = "LASSO model performance\nacross an increasing number of PCA components"
             y_label = "Root Mean Squared Error"
         else:
             performance, components = modeller.evaluate_pca_model()
+            title = "Linear Support Vector Classification performance\nacross an increasing number of PCA components"
             y_label = "Unweighted Average Recall (UAR)"
 
         # Edge case where there is not enough components to do any PCA
@@ -526,7 +528,7 @@ class DataBuilder:
 
         sns.lineplot(x=components, y=performance, ax=ax, marker="o")
         ax.set_xlabel("Number of principal components in model")
-        ax.set_title("Linear Support Vector Classification performance\nacross an increasing number of PCA components")
+        ax.set_title(title)
         ax.set_ylabel(y_label)
         print("Done!")
         return fig

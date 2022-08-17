@@ -11,7 +11,7 @@ from sklearn.manifold import TSNE
 from sklearn.preprocessing import LabelEncoder
 from itertools import compress
 
-from src.utility import is_categorical
+from utility import is_categorical
 
 
 class FeatureExtractor:
@@ -114,18 +114,22 @@ class FeatureExtractor:
 
         if isinstance(model, LinearSVC):
             categories = model.classes_
-            weights = []
+            if len(categories) > 2:
+                weights = []
 
-            for cat in categories:
-                weights.append(self.df[self.df[self.output_var] == cat].shape[0])
+                for cat in categories:
+                    weights.append(self.df[self.df[self.output_var] == cat].shape[0])
 
-            observations = sum(weights)
-            weights = [w / observations for w in weights]
+                observations = sum(weights)
+                weights = [w / observations for w in weights]
 
-            for index, _ in enumerate(coeff):
-                coeff[index] = coeff[index] * weights[index]
+                for index, _ in enumerate(coeff):
+                    coeff[index] = abs(coeff[index]) * weights[index]
+                coeff = np.sum(coeff, axis=0)
 
-            coeff = np.sum(coeff, axis=0)
+            else:
+                coeff = coeff.flatten()
+
 
         features = model.feature_names_in_
         feature_coeff = dict(zip(features, coeff))
