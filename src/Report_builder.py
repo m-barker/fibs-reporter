@@ -13,10 +13,10 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import matplotlib as mpl
 import numpy as np
 
-import config
-from Plotter import Plotter
-from utility import get_same_variables
-from Data_builder import DataBuilder
+import src.config as config
+from src.Plotter import Plotter
+from src.utility import get_same_variables
+from src.Data_builder import DataBuilder
 
 mpl.rcParams['figure.dpi'] = 300
 
