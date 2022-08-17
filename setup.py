@@ -8,7 +8,7 @@ def get_readme():
 setup(
     name="fibs-reporter",
     version="0.1.0",
-    description="Automatically generate a pdf report containing feature importance, 
+    description="Automatically generate a pdf report containing feature importance, " 
                 "baseline modelling, spurious correlation detection, and more, from a single command line input",
     url="https://github.com/m-barker/fibs-reporter/",
     long_description = get_readme(),
