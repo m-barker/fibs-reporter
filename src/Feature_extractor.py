@@ -11,7 +11,7 @@ from sklearn.manifold import TSNE
 from sklearn.preprocessing import LabelEncoder
 from itertools import compress
 
-from utility import is_categorical
+from src.utility import is_categorical
 
 
 class FeatureExtractor:
