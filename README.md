@@ -13,9 +13,6 @@ All that is required as input on the command line is the path to the CSV file co
 - PCA baseline model to estimate complexity of ML task
 - (Optionally) extract audio data features and run the above on these features
 
-## Showcase of report features
-![Feature Importance Example](images/feature_importance_example.png)
-
 ## Installation
 The easiest way to install FIBS is by running the pip command:
 ```
