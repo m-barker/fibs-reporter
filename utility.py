@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-import src.config as src
+import src.config as config
 
 def get_same_variables(correlation_dfs: list, feature_df: pd.DataFrame) -> list:
     """
