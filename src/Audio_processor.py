@@ -6,11 +6,10 @@ import opensmile
 import audiofile
 
 from pydub import AudioSegment
-from src.Data_analyser import DataAnalyser
+from Data_analyser import DataAnalyser
 from scipy import stats
-from src.utility import remove_nans_and_missing
 
-import src.config as config
+import config
 
 
 class AudioProcessor:
@@ -56,10 +55,28 @@ class AudioProcessor:
         data = []
         columns = None
         self.df = self.df.reset_index(drop=True)
-
+        print("Processing audio files...")
+        if len(files) > 500:
+            print(f"There are a total of {len(files)} audio files to process. This may take a while.")
+        elif len(files) > 1000:
+            print(f"There are a total of {len(files)} audio files to process. This may take over an hour to generate "
+                  f"the report.")
+        elif len(files) > 10000:
+            print(f"There are a total of {len(files)} audio files to process. This may take several hours to generate "
+                  f"the report.")
         for index, file in enumerate(files):
-            if index % 100 == 0:
-                print(f"Completed {index}/{len(files)}")
+            if len(files) < 1000:
+                if index % 100 == 0:
+                    print(f"Completed {index}/{len(files)}")
+            elif len(files) < 2000:
+                if index % 200 == 0:
+                    print(f"Completed {index}/{len(files)}")
+            elif len(files) < 10000:
+                if index % 500 == 0:
+                    print(f"Completed {index}/{len(files)}")
+            else:
+                if index % 1000 == 0:
+                    print(f"Completed {index}/{len(files)}")
 
             file_path = ""
             file_path += file
@@ -89,12 +106,10 @@ class AudioProcessor:
         if self.analyser is not None and len(list(pd.unique(self.audio_features["sample_rate"]))) > 1:
             self.analyser.add_to_df("sample_rate", self.get_sample_rates())
 
-        output_var = list(self.df[self.output_var_name])
-        loudness = list(data["loudness"])
-        loudness_corr = stats.spearmanr(a=output_var, b=loudness)
-
         if len(list(pd.unique(self.audio_features["sample_rate"]))) == 1:
             self.same_sample_rate = True
+
+        print("Done processing audio files!")
 
     def get_sample_rates(self) -> list:
         """

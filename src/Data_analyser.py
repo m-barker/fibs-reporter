@@ -6,7 +6,7 @@ from scipy import stats
 from sklearn.feature_selection import mutual_info_classif
 from sklearn.feature_selection import mutual_info_regression
 
-import src.config as config
+import config
 
 
 class DataAnalyser:
@@ -14,8 +14,6 @@ class DataAnalyser:
                  remove_nans: bool = False, audio: bool = False):
         """
         Stores the given dataframe and output variable as data members
-        :param max_categories: Optional (int, default=50) maximum number of categories in
-               any potential categorical variable
         :param df: Pandas df that contains the dataset to be analysed
         :param output_var: The output variable (dependent variable) name in the df
         :param remove_nans bool (default=False) whether to remove nans from df
@@ -125,10 +123,6 @@ class DataAnalyser:
             return False
         if data_type == "float32":
             return False
-        if data_type == "datetime64[ns]":
-            return False
-        if data_type == "datetime32[ns]":
-            return False
         if data_type == "string":
             return True
         if data_type == "boolean":
@@ -140,13 +134,12 @@ class DataAnalyser:
         number_unique = len(list(pd.unique(self.df[var_name])))
         percent_unique = number_unique / rows * 100
 
-        """
         if rows < 500:
-            if percent_unique >= 20:
+            if percent_unique <= 10:
                 return True
             return False
-        """
-        if number_unique <= self.max_categories:
+
+        if number_unique <= config.MAX_CAT:
             return True
         return False
 
@@ -256,7 +249,6 @@ class DataAnalyser:
 
         if len(set(self.df[cont_var])) == 1 or len(set(self.df[cat_var])) == 1:
             return 0, 1
-
         categories = list(pd.unique(self.df[cat_var]))
         category_values = []
         for category in categories:
@@ -316,67 +308,66 @@ class DataAnalyser:
 
         return mi_df
 
-    def spearman_r_values(self, vars: list):
+    def spearman_r_values(self, variables: list):
         """
-
-        :param vars:
-        :return:
+        Calculates the Spearman correlation statistic for a list of variables
+        :param variables: list of variable names
+        :return: list
         """
-        if len(vars) == 0:
+        if len(variables) == 0:
             return []
 
         corr = []
-        for variable in vars:
+        for variable in variables:
             r, p = self.spearman_correlation(variable)
             corr.append(abs(r))
         return corr
-        _, corrected_p_vals = fdrcorrection(p_vals)
-        return list(corrected_p_vals)
 
-    def chi_squared_stat_vals(self, vars: list):
+    def chi_squared_stat_vals(self, variables: list):
         """
-
-        :return:
+        Calculates the Chi-Squared statistic for a list of variables
+        :param variables: list of variable names
+        :return: list
         """
-        if len(vars) == 0:
+        if len(variables) == 0:
             return []
 
         stats = []
-        for variable in vars:
+        for variable in variables:
             cont_table = self.cross_tabulate(variable)
             (chi2, p, _, _) = scipy.stats.chi2_contingency(cont_table)
             stats.append(chi2)
         return stats
-        _, corrected_p_vals = fdrcorrection(p_vals)
-        return list(corrected_p_vals)
 
-    def kw_stat_vals(self, vars: list, audio: bool = False):
+    def kw_stat_vals(self, variables: list, audio: bool = False):
         """
-
-        :param vars:
-        :return:
+        Calculates the Kruskal-Wallis statistic for a list of variables
+        :param audio: bool (default=False) whether the variables are for audio or tabular data
+        :param variables: list of variable names
+        :return: list
         """
-        if len(vars) == 0:
+        if len(variables) == 0:
             return []
 
         stats = []
-        for variable in vars:
+        for variable in variables:
             if audio:
                 cat = "output"
             elif self.is_categorical(variable):
-                cat = "output"
-            else:
                 cat = "indep"
+            else:
+                cat = "output"
             stat, p = self.kruskal_wallis_h(indep_var=variable, categorical=cat)
             stats.append(stat)
         return stats
-        _, corrected_p_vals = fdrcorrection(p_vals)
-        return list(corrected_p_vals)
 
     def point_biserial_correlation(self, var_list: list):
         """
-
+        Calculates the point biserial correlation between a list of variables and the output var
+        :param var_list: list of variable names
+        :return: list
         """
+
         if len(var_list) == 0:
             return []
 
@@ -386,12 +377,3 @@ class DataAnalyser:
             r, p_val = stats.pointbiserialr(self.df[variable], self.df[self.output_var])
             corr_list.append(abs(r))
         return corr_list
-
-
-
-
-
-
-
-
-

@@ -17,7 +17,7 @@ from sklearn.metrics import mean_squared_error
 
 from math import sqrt
 
-from src.utility import is_categorical
+from utility import is_categorical
 
 
 class ModelTrainer:
@@ -137,7 +137,7 @@ class ModelTrainer:
         else:
             dual = False
 
-        svc = LinearSVC(dual=dual, fit_intercept=False, max_iter=10000, C=0.0001)
+        svc = LinearSVC(dual=dual, fit_intercept=False, max_iter=10000)
         svc_trained = svc.fit(self.x_train, self.y_train)
         self.trained_svc = svc_trained
         return svc_trained
@@ -158,7 +158,7 @@ class ModelTrainer:
         Trains an elastic net regression model
         :return: Trained elastic net model
         """
-        elastic_net = linear_model.ElasticNet(max_iter=10000)
+        elastic_net = linear_model.ElasticNet(max_iter=10000, fit_intercept=False)
         trained_net = elastic_net.fit(self.x_train, self.y_train)
         self.trained_en = trained_net
         self.en_y_hat = trained_net.predict(self.x_test)

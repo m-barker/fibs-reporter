@@ -2,12 +2,11 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FormatStrFormatter
 
-from src.Data_analyser import DataAnalyser
-from src.Audio_processor import AudioProcessor
-from src.Feature_extractor import FeatureExtractor
-from src.Model_trainer import ModelTrainer
+from Data_analyser import DataAnalyser
+from Audio_processor import AudioProcessor
+from Feature_extractor import FeatureExtractor
+from Model_trainer import ModelTrainer
 
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import recall_score
@@ -17,9 +16,9 @@ from random import randint
 from statistics import mode
 from math import sqrt
 
-from src.utility import is_categorical
-from src.utility import remove_constant_vars
-from src.utility import remove_nans_and_missing
+from utility import is_categorical
+from utility import remove_constant_vars
+from utility import remove_nans_and_missing
 
 
 class DataBuilder:
@@ -31,6 +30,10 @@ class DataBuilder:
                  test_df: pd.DataFrame = None):
         """
 
+        :param df: dataframe containing features
+        :param output_var: str, name of the output variable
+        :param audio_col: Optional str name of the audio column
+        :param test_df: Optional dataframe objecting containing separate test data
         """
 
         self.output_var = output_var
@@ -130,9 +133,9 @@ class DataBuilder:
 
     def get_stat_feature_ranking(self, audio: bool = False):
         """
-
-        :param audio:
-        :return:
+        Gets the statistical test feature ranking metric
+        :param audio: bool (default = False), whether the data is tabular or audio
+        :return: dataframe of sorted ranking
         """
         if audio:
             analyser = self.audio_analyser
@@ -263,7 +266,7 @@ class DataBuilder:
 
     def plot_feature_ranking_heatmap(self, audio: bool = False):
         """
-
+        Plots the feature ranking heatmap
         :param audio: bool (default = False) whether to extract audio or tabular features
         :return: matplotlib.Figure object of plotted figure
         """
@@ -304,6 +307,7 @@ class DataBuilder:
 
     def baseline_model_class(self, audio: bool = False):
         """
+        Gets baseline classification model performance
         :param audio: bool (default=False). Whether to train on audio data or tabular
         :return: tuple(RF UAR, SVC UAR, RF CM, SVC CM)
         """
@@ -323,7 +327,7 @@ class DataBuilder:
 
     def baseline_model_reg(self, audio: bool = False):
         """
-
+        Gets baseline regression model performance
         :param audio: bool (default=False). Whether to train on audio data or tabular
         :return: tuple(LASSO R2, LASSO RMSE, EN R2, EN RMSE)
         """
@@ -340,6 +344,9 @@ class DataBuilder:
     def plot_confusion_matrix(self, cm: np.ndarray, y_hat, audio, title: str, bar_label: bool = False):
         """
         Plots the confusion matrix
+        :param bar_label: bool (default=False) whether to add the color bar label
+        :param audio: bool (default=False) whether the data is audio or tabular
+        :param y_hat: list or predicted values
         :param title: Title of the plot
         :param cm: np array containing confusion matrix
         :return: matplotlib.Fig
@@ -374,6 +381,8 @@ class DataBuilder:
             for i in range(no_of_classes):
                 accuracies.append(cm[i, i])
 
+            mean_accuracy = sum(accuracies)/len(accuracies)
+            accuracies = [abs(x - mean_accuracy) for x in accuracies]
             sorted_accuracies = accuracies.copy()
             sorted_accuracies.sort()
 
@@ -421,82 +430,9 @@ class DataBuilder:
 
         return fig
 
-    def plot_regression_predictions(self, audio: bool = False):
-        """
-
-        :param audio:
-        :return:
-        """
-        if audio:
-            lasso_pred, en_pred = self.audio_modeller.get_regression_predictions()
-            actual = self.audio_modeller.y_test
-        else:
-            lasso_pred, en_pred = self.tabular_modeller.get_regression_predictions()
-            actual = self.tabular_modeller.y_test
-
-        y_min = min(actual)
-        y_max = max(actual)
-
-        if len(actual) < 50:
-            s = 6
-        elif len(actual) < 200:
-            s = 5
-        else:
-            s = 4
-
-        lass_fig, lass_ax = plt.subplots()
-        lass_x_min = min(lasso_pred)
-        lass_x_max = max(lasso_pred)
-        lass_ax.set_xlim(left=lass_x_min, right=lass_x_max)
-        lass_ax.set_ylim(bottom=y_min, top=y_max)
-        sns.scatterplot(x=lasso_pred, y=actual, ax=lass_ax, s=s)
-        plt.xticks(rotation=45, horizontalalignment="right")
-        plt.subplots_adjust(bottom=0.2)
-
-        en_fig, en_ax = plt.subplots()
-        en_x_min = min(lasso_pred)
-        en_x_max = max(lasso_pred)
-        en_ax.set_xlim(left=en_x_min, right=en_x_max)
-        en_ax.set_ylim(bottom=y_min, top=y_max)
-        sns.scatterplot(x=en_pred, y=actual, ax=en_ax, s=s)
-
-        self.plot_y_x_line(lass_ax)
-        self.plot_y_x_line(en_ax)
-
-        lass_ax.set_xlabel(f"{self.output_var} predicted")
-        lass_ax.set_ylabel(f"{self.output_var} actual")
-        lass_ax.yaxis.set_major_formatter(FormatStrFormatter('%.2e'))
-        lass_ax.xaxis.set_major_formatter(FormatStrFormatter('%.2e'))
-
-        en_ax.set_xlabel(f"{self.output_var} predicted")
-        en_ax.set_ylabel(f"{self.output_var} actual")
-        en_ax.yaxis.set_major_formatter(FormatStrFormatter('%.2e'))
-        en_ax.xaxis.set_major_formatter(FormatStrFormatter('%.2e'))
-        plt.xticks(rotation=45, horizontalalignment="right")
-        plt.subplots_adjust(bottom=0.2)
-
-        return lass_fig, en_fig
-
-    def plot_y_x_line(self, ax):
-        """
-        Add y=x lines
-        This function is from StackOverflow user Paul H and can be accessed
-        at: https://stackoverflow.com/questions/25497402/adding-y-x-to-a-matplotlib-scatter-plot-if-i-havent-kept-track-of-all-the-data
-        :param ax:ax object to plot the line on
-        :return: None
-        """
-        lims = [
-            np.min([ax.get_xlim(), ax.get_ylim()]),  # min of both axes
-            np.max([ax.get_xlim(), ax.get_ylim()]),  # max of both axes
-        ]
-        ax.plot(lims, lims, 'k-', alpha=0.75, zorder=0)
-        ax.set_aspect('equal')
-        ax.set_xlim(lims)
-        ax.set_ylim(lims)
-
     def plot_pca(self, audio: bool = False):
         """
-
+        Plots the graph on model performance accross an increasing number of PCA components
         :return: matplotlib.Fig object
         """
 
@@ -590,7 +526,7 @@ class DataBuilder:
     def get_simple_audio_feature_importance(self):
         """
         Extracts simple audio features relative importance
-        :return:
+        :return: pd.DF
         """
 
         sample_rate = list(self.get_feature_importance("sample_rate", audio=True))
@@ -614,7 +550,7 @@ class DataBuilder:
     def simple_audio_heatmap(self):
         """
         Plots a heatmap of the simple audio features
-        :return:
+        :return: matplotlib.Fig object
         """
         simple_features = self.get_simple_audio_feature_importance()
 
@@ -636,7 +572,7 @@ class DataBuilder:
 
     def plot_tsne(self):
         """
-
+        Plots the TSNE plot from the dataset features
         :return: matplotlib Fig
         """
 
@@ -706,9 +642,9 @@ class DataBuilder:
 
     def get_regression_baseline(self, audio: bool = False):
         """
-        Gets a
-        :param audio:
-        :return:
+        Gets simple baseline heuristic metrics for regression task
+        :param audio: bool (default=False) whether the data is audio or tabular
+        :return: tuple(float, float)
         """
 
         if audio:
@@ -729,9 +665,9 @@ class DataBuilder:
 
     def traffic_light_score(self, audio: bool = False):
         """
-
-        :param audio:
-        :return:
+        Calculates the traffic light score for the report
+        :param audio: bool (default = False) whether the score is for audio or tabular data
+        :return: dict
         """
 
         baseline_score = None
@@ -793,35 +729,34 @@ class DataBuilder:
             feature_score = "green"
 
         if audio:
-            if simple_feature_score == "red" and baseline_score == "amber":
-                overall_score = "red"
-            elif baseline_score == "green" and simple_feature_score == "amber":
-                overall_score = "amber"
-            elif baseline_score == "green" and simple_feature_score == "green":
-                overall_score = "green"
-            elif baseline_score == "green" and simple_feature_score == "red":
-                overall_score = "amber"
-            elif baseline_score == "amber" and feature_score == "red":
-                overall_score = "red"
-            elif baseline_score == "amber" and feature_score == "amber":
-                overall_score = "amber"
-            elif baseline_score == "amber" and feature_score == "green":
-                overall_score = "green"
-            elif baseline_score == "red" and feature_score == "amber":
-                overall_score = "amber"
-            else:
-                overall_score = "red"
+            if baseline_score == "green":
+                if simple_feature_score == "green":
+                    overall_score = "green"
+                else:
+                    overall_score = "amber"
+            elif baseline_score == "amber":
+                if simple_feature_score == "green":
+                    overall_score = feature_score
+                elif simple_feature_score == "amber":
+                    if feature_score == "green" or feature_score == "amber":
+                        overall_score = "amber"
+                    else:
+                        overall_score = "red"
+                elif simple_feature_score == "red":
+                    overall_score = "red"
+            elif baseline_score == "red":
+                if simple_feature_score == "amber" or simple_feature_score == "red":
+                    overall_score = "red"
+                elif simple_feature_score == "green":
+                    if feature_score == "green" or feature_score == "amber":
+                        overall_score = "amber"
+                    else:
+                        overall_score = "red"
 
         else:
             if baseline_score == "green":
                 overall_score = "green"
-            elif baseline_score == "amber" and feature_score == "red":
-                overall_score = "red"
-            elif baseline_score == "amber" and feature_score == "amber":
-                overall_score = "amber"
-            elif baseline_score == "amber" and feature_score == "green":
-                overall_score = "green"
-            elif baseline_score == "red" and feature_score == "amber":
+            elif feature_score == "green" or feature_score == "amber":
                 overall_score = "amber"
             else:
                 overall_score = "red"
@@ -839,9 +774,11 @@ class DataBuilder:
 
     def plot_class_performance(self, y_hat: list, audio: bool = False, model_name: str = ""):
         """
-
-        :param y_hat:
-        :return:
+        Plots class performance UAR graphs
+        :param model_name: Str, name of the model to put on the Figure
+        :param audio: bool (default = False) whether the data is tabular or audio
+        :param y_hat: predicted values
+        :return: matplotlib.fig object
         """
 
         if audio:
@@ -891,15 +828,17 @@ class DataBuilder:
         if rotate:
             plt.xticks(rotation=45)
 
+        fig.tight_layout()
+
         return fig
 
     def plot_residuals(self, y_hat, audio: bool = False, model_name: str = ""):
         """
-
-        :param model_name:
-        :param y_hat:
-        :param audio:
-        :return:
+        Plots the residual graphs from regression models
+        :param model_name: Str, name of regression model (elastic net or LASSO)
+        :param y_hat: List of predicted values
+        :param audio: bool (default = False) whether the data is audio or tabular
+        :return: matplotlib.Fig object
         """
         if audio:
             modeller = self.audio_modeller
@@ -922,9 +861,9 @@ class DataBuilder:
 
     def get_model_performance_graphs(self, audio: bool = False):
         """
-
-        :param audio:
-        :return:
+        Plots the model performance graphs
+        :param audio: bool (default = False) whether the data is audio or tabular
+        :return: tuple of matplotlib.figs
         """
 
         if audio:
@@ -944,14 +883,3 @@ class DataBuilder:
             fig_2 = self.plot_residuals(en_y_hat, audio=audio, model_name="Elastic Net")
 
         return fig_1, fig_2
-
-
-
-
-
-
-
-
-
-
-

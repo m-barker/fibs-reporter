@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import xgboost as xgb
+
 from sklearn.feature_selection import SelectFromModel
 from sklearn.feature_selection import RFE
 from sklearn import linear_model
@@ -11,7 +12,7 @@ from sklearn.manifold import TSNE
 from sklearn.preprocessing import LabelEncoder
 from itertools import compress
 
-from src.utility import is_categorical
+from utility import is_categorical
 
 
 class FeatureExtractor:
@@ -294,8 +295,8 @@ class FeatureExtractor:
 
     def tsne(self):
         """
-
-        :return:
+        Calculates TSNE of dataset features
+        :return: np.Array
         """
         tsnse = TSNE(learning_rate="auto")
         return tsnse.fit_transform(self.df.drop([self.output_var], axis=1))

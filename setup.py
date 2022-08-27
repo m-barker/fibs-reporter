@@ -7,11 +7,11 @@ def get_readme():
 
 setup(
     name="fibs-reporter",
-    version="0.1.0",
+    version="0.2.0",
     description="Automatically generate a pdf report containing feature importance, " 
                 "baseline modelling, spurious correlation detection, and more, from a single command line input",
     url="https://github.com/m-barker/fibs-reporter/",
-    long_description = get_readme(),
+    long_description=get_readme(),
     long_description_content_type="text/markdown",
     packages=find_packages(),
     entry_points={
@@ -25,17 +25,15 @@ setup(
                       "numpy==1.23.0",
                       "scipy==1.8.1",
                       "Pillow==9.1.1",
-                      "pdfrw==0.4",
                       "opensmile==2.4.1",
                       "audiofile==1.1.0",
                       "sklearn==0.0",
                       "scikit-learn==1.1.1",
-                      "statsmodels==0.13.2",
                       "seaborn==0.11.2",
                       "pydub==0.25.1",
                       "xgboost==1.6.1"],
 
     author="Matt Barker",
-    license="CC BY-NC-SA 2.0",
-    python_requires=">=3.8"
+    license="CC BY-NC 4.0",
+    python_requires=">=3.7"
 )

@@ -1,11 +1,10 @@
 import argparse
 import pandas as pd
-import src
 
-from src.Report_builder import ReportBuilder
-from src.Argparser import configure_argparse
-from src.Data_builder import DataBuilder
-import src.config as config
+from Report_builder import ReportBuilder
+from Argparser import configure_argparse
+from Data_builder import DataBuilder
+import config
 import csv
 
 

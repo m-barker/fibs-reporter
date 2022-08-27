@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-import src.config as config
+import config
 
 def get_same_variables(correlation_dfs: list, feature_df: pd.DataFrame) -> list:
     """
@@ -80,10 +80,6 @@ def is_categorical(df, var_name: str) -> bool:
         return False
     if data_type == "float32":
         return False
-    if data_type == "datetime64[ns]":
-        return False
-    if data_type == "datetime32[ns]":
-        return False
     if data_type == "string":
         return True
     if data_type == "boolean":
@@ -95,12 +91,11 @@ def is_categorical(df, var_name: str) -> bool:
     number_unique = len(list(pd.unique(df[var_name])))
     percent_unique = number_unique / rows * 100
 
-    """
     if rows < 500:
-        if percent_unique >= 20:
+        if percent_unique <= 10:
             return True
         return False
-    """
+
     if number_unique <= max_categories:
         return True
     return False

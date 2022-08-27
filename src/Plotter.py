@@ -6,7 +6,7 @@ from operator import add
 from operator import truediv
 from math import ceil
 
-from src.utility import is_categorical
+from utility import is_categorical
 
 
 class Plotter:
@@ -46,10 +46,10 @@ class Plotter:
     def plot_violin(self, cont_var: str, cat_var: str = "output_var", txt: str = None, max_cat = 20, **pltkw) -> tuple:
         """
 
-        :param txt:
-        :param cont_var:
-        :param cat_var:
-        :return:
+        :param txt: optional text to add to the plot
+        :param cont_var: name of the independent variable
+        :param cat_var: name of the categorical variable
+        :return: tuple(fig, ax)
         Documentation can be found at:
         https://matplotlib.org/stable/gallery/statistics/customized_violin.html#sphx-glr-gallery-statistics-customized-violin-py
         """
@@ -109,9 +109,9 @@ class Plotter:
     def plot_scatter(self, indep_var: str, txt: str = None) -> tuple:
         """
         Creates a scatter between self.output_var and indep_var
-        :param txt:
-        :param indep_var:
-        :return:
+        :param txt: optional text to add to the plot
+        :param indep_var: name of the independent variable to plot
+        :return: Tuple(fig, ax)
         """
         fig, ax = plt.subplots()
         ax.scatter(self.df[indep_var], self.df[self.output_var], s=5, alpha=0.5)
@@ -119,6 +119,7 @@ class Plotter:
         ax.set_ylabel(self.output_var)
         if txt is not None:
             self.add_correlation_and_highlight(txt, ax, 0.7, 0.8, 0.2)
+        ax.set_title(f"Scatter plot of {self.output_var} and {indep_var}")
 
         return fig, ax
 
@@ -158,199 +159,6 @@ class Plotter:
         df.sort_values(by=[0], inplace=True, ascending=False)
         top_20 = df.iloc[:20]
         return list(top_20.index)
-
-    def plot_hist(self, indep_var: str, cat=0, **pltkw):
-        """
-
-        :param indep_var:
-        :param cat:
-        :return:
-        """
-        if cat == 0:
-            cat_var = self.output_var
-            cont_var = indep_var
-        else:
-            cat_var = indep_var
-            cont_var = self.output_var
-
-        categories = list(pd.unique(self.df[cat_var]))
-        fig, axs = plt.subplots(len(categories) // 4 + 1, min(3, len(categories)), **pltkw)
-        ax_num = 0
-        row_num = 0
-        col_num = 0
-        maximum = self.df[cont_var].max()
-        for index, category in enumerate(categories):
-            data = self.df[self.df[cat_var] == category]
-            data = data[cont_var]
-            if len(categories) < 4:
-                axs[ax_num].hist(data, density=True, range=(0, maximum), edgecolor='black')
-                axs[ax_num].set_title(f"Histogram density of {cont_var} when {cat_var} is equal to {category}")
-                axs[ax_num].set_xlabel(cont_var)
-                axs[ax_num].set_ylabel("Prob. Density")
-                ax_num += 1
-            else:
-                axs[row_num][col_num].hist(data, density=True, range=(0, maximum), edgecolor='black')
-                axs[row_num][col_num].set_title(
-                    f"Histogram density of {cont_var}\n when {cat_var} is equal to {category}")
-                axs[row_num][col_num].set_xlabel(cont_var)
-                axs[row_num][col_num].set_ylabel("Prob. Density")
-                col_num = (col_num + 1) % 3
-                if (index + 1) % 3 == 0 and index != 0:
-                    row_num += 1
-
-        return fig
-
-    def plot_violin_multi(self, indep_vars: list, out_var_cat: bool = True,
-                          plots_per_row: int = 3, texts: list = None) -> plt.Figure:
-        """
-        
-        :param texts: (optional) String list containing additional text to display on each individual subplot
-        :param indep_vars: List of independent variables. One plot will be generated for each variable
-        :param out_var_cat: Bool (default=True) whether output variable is categoric or not 
-        :param plots_per_row: Int (default=3), number of plots per row of the figure
-        :return: MatPlotLib figure object
-        """"""
-        Documentation can be found at:
-        https://matplotlib.org/stable/gallery/statistics/customized_violin.html#sphx-glr-gallery-statistics-customized-violin-py
-        """
-        number_of_plots = len(indep_vars)
-        # Dimensions of the figure
-        n_rows = ceil(number_of_plots / plots_per_row)
-        n_cols = min(number_of_plots, plots_per_row)
-        if number_of_plots == 1:
-            if out_var_cat:
-                return self.plot_violin(indep_vars[0], txt=texts[0])
-            else:
-                return self.plot_violin(self.output_var, indep_vars[0], txt=texts[0])
-
-        fig, axs = plt.subplots(n_rows, n_cols)
-        fig.tight_layout()
-        plt_number = 1
-        axs = axs.flatten()
-        cont_var = None
-        cat_var = None
-        for index, ax in enumerate(axs):
-            if plt_number <= number_of_plots:
-                data = []
-                x_points = []
-
-                if out_var_cat:
-                    categories = list(pd.unique(self.df[self.output_var]))
-                    cat_var = self.output_var
-                    cont_var = indep_vars[index]
-                else:
-                    categories = list(pd.unique(self.df[indep_vars[index]]))
-                    cat_var = indep_vars[index]
-                    cont_var = self.output_var
-                categories.sort()
-                medians = []
-                for i, category in enumerate(categories):
-                    values = self.df[self.df[cat_var] == category]
-                    data.append(list(values[cont_var]))
-                    medians.append(values[cont_var].median())
-                    x_points.append(i + 1)
-
-                # ax.set_title(f"Violin plot of {cont_var} across {cat_var}")
-                ax.set_ylabel(f"{cont_var}")
-                ax.set_xlabel(f"{cat_var}")
-                ax.set_xticks(x_points, categories, rotation=45)
-
-                if texts is not None:
-                    self.add_correlation_and_highlight(texts[index], ax, 0.7, 0.8, 0.05, less_than=True,
-                                                       scientific_format=True)
-
-                ax.violinplot(data, showmedians=True)
-                ax.plot(np.arange(1, len(categories) + 1), medians, label="Category medians")
-
-                plt_number += 1
-            else:
-                ax.remove()
-
-        y = 1
-        font_weight = "bold"
-        if out_var_cat:
-            fig.suptitle(f"Distributions of {cat_var} across all continuous variables", y=y, fontweight=font_weight)
-        else:
-            fig.suptitle(f"Distribution of {cont_var} across all categorical variables", y=y, fontweight=font_weight)
-
-        return fig
-
-    def plot_scatter_multi(self, indep_vars: list, plots_per_row: int = 3,
-                           texts: list = None) -> plt.Figure:
-        """
-
-        :param texts: (optional) String list containing additional text to display on each individual subplot
-        :param indep_vars: List of independent variables. One plot will be generated for each variable 
-        :param plots_per_row: Int (default=3), number of plots per row of the figure
-        :return: MatPlotLib figure object
-        """"""
-        Documentation can be found at:
-        https://matplotlib.org/stable/gallery/statistics/customized_violin.html#sphx-glr-gallery-statistics-customized-violin-py
-        """
-
-        number_of_plots = len(indep_vars)
-        # Dimensions of the figure
-        n_rows = ceil(number_of_plots / plots_per_row)
-        n_cols = min(number_of_plots, plots_per_row)
-
-        if number_of_plots == 1:
-            fig = self.plot_scatter(indep_vars[0], txt=texts[0])
-            return fig
-
-        fig, axs = plt.subplots(n_rows, n_cols)
-        fig.tight_layout()
-        plt_number = 1
-        axs = axs.flatten()
-        for index, ax in enumerate(axs):
-            if plt_number <= number_of_plots:
-                ax.scatter(self.df[indep_vars[index]], self.df[self.output_var], s=1, alpha=0.2)
-
-                if texts is not None:
-                    self.add_correlation_and_highlight(texts[index], ax, 0.7, 0.8, 0.2)
-
-                ax.set_xlabel(indep_vars[index])
-                ax.set_ylabel(self.output_var)
-                plt_number += 1
-            else:
-                ax.remove()
-
-        fig.suptitle(f"Scatters of {self.output_var} for each continuous variable (SCC = Spearman Correlation"
-                     f" Coefficient)", y=1, fontweight="bold")
-
-        return fig
-
-    def configure_heatmap(self, ax: plt.Axes, rows: int, cols: int, label: bool = True,
-                          cont_table: pd.DataFrame = None) -> None:
-        """
-        Helper function that configures the axis for the contingency heatmap
-
-        :param cols: Number of rows in the heatmap
-        :param rows: Number of columns in the heatmap
-        :param ax: MatPlotLib axis object
-        :param label: Bool (default True) if True, labels the data in cont_table on the graph
-        :param cont_table: Pandas DataFrame (default = None) contains the data of the heatmap
-        :return: None
-        """
-
-        ax.set_xticks(np.arange(cols + 1) - .5, minor=True)
-        ax.set_yticks(np.arange(rows + 1) - .5, minor=True)
-
-        ax.grid(which="minor", color='w', linestyle='-', linewidth=2)
-        ax.tick_params(which="minor", bottom=False, left=False)
-
-        if label:
-            for r in range(rows):
-                for c in range(cols):
-                    if cont_table.iloc[r, c] <= 50:
-                        colour = "black"
-                    else:
-                        colour = "white"
-                    if cont_table.iloc[r, c] == 100:
-                        txt = "100"
-                    else:
-                        txt = str(cont_table.iloc[r, c].round(1))
-                    text = ax.text(c, r, txt,
-                                   ha="center", va="center", color=colour)
 
     def add_correlation_and_highlight(self, corr_txt: str, ax: plt.Axes,
                                       x_pos: float, y_pos: float, cut_off: float,
