@@ -38,7 +38,7 @@ fibs path_to_csv_file target -audio filename --report_name data_report
 
 Another command line argument, `--test` can be used to specify an additional CSV file which is treated as the test dataset. This CSV file must contain the same variables as the other CSV file, and is used to evaluate baseline model performance. Feature importance scores are calculated on the original CSV (training set) only. 
 
-For example, if the test CSV is stored at _path_to_test_csv, and the other arguments are as above in the audio case, then the following command line input would be used:
+For example, if the test CSV is stored at _path_to_test_csv_, and the other arguments are as above in the audio case, then the following command line input would be used:
 
 ```
 fibs path_to_train_csv target -audio filename --test path_to_test_csv --report_name data_report
