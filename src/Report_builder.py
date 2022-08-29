@@ -160,9 +160,9 @@ class ReportBuilder:
             self.pdf.cell(txt=f"{data_type} baseline models performance by class", border="B", w=0)
             self.pdf.ln(10)
             fig_1, fig_2 = self.data_builder.get_model_performance_graphs(audio=audio)
-            self.insert_graph(fig_1, width=7, height=6, p_width=1.2, p_height=2.5, x=35)
+            self.insert_graph(fig_1, width=7, height=6, p_width=1.2, p_height=2.5, x=25)
             self.pdf.ln(10)
-            self.insert_graph(fig_2, width=7, height=6, p_width=1.2, p_height=2.5, x=35)
+            self.insert_graph(fig_2, width=7, height=6, p_width=1.2, p_height=2.5, x=25)
 
     def insert_traffic_colour(self, colour: str):
         """
