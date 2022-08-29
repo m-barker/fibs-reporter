@@ -116,7 +116,6 @@ class DataAnalyser:
         :param var_name: Name of the variable within self.df to check for type
         :return: Bool, True if variable is deemed to be categorical, else False
         """
-
         data_type = self.df[var_name].dtypes
         if data_type == "float64":
             return False
@@ -125,6 +124,8 @@ class DataAnalyser:
         if data_type == "string":
             return True
         if data_type == "boolean":
+            return True
+        if data_type == "bool":
             return True
         if data_type == "object":
             return True
