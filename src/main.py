@@ -84,7 +84,7 @@ def validate_and_init(args) -> tuple:
 
     if args.audio_file_col_name is not None:
         if args.audio_file_col_name not in variables:
-            raise ValueError(f"Error, no audio file column called {args.audio_col} "
+            raise ValueError(f"Error, no audio file column called {args.audio_file_col_name} "
                              f"exists in csv file {args.csv_filepath}")
 
     if args.test is not None:

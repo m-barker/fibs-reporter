@@ -84,6 +84,8 @@ def is_categorical(df, var_name: str) -> bool:
         return True
     if data_type == "boolean":
         return True
+    if data_type == "bool":
+        return True
     if data_type == "object":
         return True
 
