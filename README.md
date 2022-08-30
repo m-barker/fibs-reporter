@@ -21,12 +21,8 @@ fibs iris.csv Species --report_name iris
 
 Some example snippets of automatically generated iris report are:
 
-### **Feature Importance Metrics**
-
 ![](images/iris_features.png)
-### **Baseline model performance**
 ![](images/iris_baseline_model.png)
-### **Feature visualisations**
 ![](images/iris_visuals.png)
 
 ## Installation
