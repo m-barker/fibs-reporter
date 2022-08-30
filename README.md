@@ -13,6 +13,22 @@ All that is required as input on the command line is the path to the CSV file co
 - (Optionally) extract audio data features and run the above on these features
 - Output all of the above in a PDF report with accompanying dynamic textual explanations
 
+For example, after installing FIBS, running the following command would generate a report (called iris.csv) on [UCI's iris dataset](https://archive.ics.uci.edu/ml/datasets/iris) (assuming the CSV file is in your current working directory):
+
+```
+fibs iris.csv Species --report_name iris
+```
+
+Some example snippets of automatically generated iris report are:
+
+### **Feature Importance Metrics**
+
+![](images/iris_features.png)
+### **Baseline model performance**
+![](images/iris_baseline_model.png)
+### **Feature visualisations**
+![](images/iris_visuals.png)
+
 ## Installation
 The easiest way to install FIBS is by running the pip command:
 ```
