@@ -373,7 +373,7 @@ class DataBuilder:
         classes.sort()
         extra_txt = ""
         if len(classes) > 10:
-            extra_txt = "Top 10 performing classes shown"
+            extra_txt = "Top 10 most informative classes shown"
             # Get the top 10 performing classes to plot
             no_of_classes = len(classes)
 
