@@ -19,7 +19,7 @@ For example, after installing FIBS, running the following command would generate
 fibs iris.csv Species --report_name iris
 ```
 
-Some example snippets of automatically generated iris report are:
+Some example snippets from the automatically generated iris PDF report are:
 
 ![](images/iris_features.png)
 ![](images/iris_baseline_model.png)
