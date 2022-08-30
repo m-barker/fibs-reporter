@@ -234,14 +234,14 @@ class ReportBuilder:
         if simple_feature_score == "red":
             extra_audio_txt = "Very simple audio features show potentially strong correlation with the output " \
                               "variable. " \
-                              "It is very import to consider whether any of these simple feature should be true" \
+                              "It is very import to consider whether any of these simple features should be true" \
                               " correlates, else there is very likely bias within the dataset. "
 
         elif simple_feature_score == "amber":
             extra_audio_txt = "Very simple audio features show potentially weak to moderate correlation with the " \
                               "output " \
                               "variable. " \
-                              "It is very import to consider whether any of these simple feature should be true" \
+                              "It is very import to consider whether any of these simple features should be true" \
                               " correlates, else there is very likely bias within the dataset. "
 
         if overall_score == "red" and model_score == "red":
@@ -308,7 +308,7 @@ class ReportBuilder:
                 self.pdf.set_font(*self.body)
                 self.pdf.multi_cell(txt="At least one of three simple audio features has been identified as being "
                                         "relatively important to at least one feature extraction method. If you do not "
-                                        "expect loudness to correlate with the output variable, this strongly suggest "
+                                        "expect loudness to correlate with the output variable, this strongly suggests "
                                         "either bias within your dataset, or very poor baseline model performance. It "
                                         "is strongly advised you look at the plots of simple audio features to "
                                         "determine whether this is actual bias or not.", w=0)
@@ -317,7 +317,7 @@ class ReportBuilder:
                 self.pdf.set_font(*self.body)
                 self.pdf.multi_cell(txt="At least one of three simple audio features has been identified as being "
                                         "weakly relatively important to at least one feature extraction method. If you do not "
-                                        "expect loudness to correlate with the output variable, this strongly suggest "
+                                        "expect loudness to correlate with the output variable, this strongly suggests "
                                         "either bias within your dataset, or very poor baseline model performance. It "
                                         "is strongly advised you look at the plots of simple audio features to "
                                         "determine whether this is actual bias or not.", w=0)
@@ -430,9 +430,9 @@ class ReportBuilder:
         self.pdf.cell(txt="Simple Audio Feature Importance", border="B", w=0)
         self.pdf.ln(10)
         self.pdf.set_font(*self.body)
-        self.pdf.multi_cell(txt="Below shows a heatmap, and plots, of three very simple audio features: sample_rate, "
+        self.pdf.multi_cell(txt="Below shows a heatmap, and plots, of three very simple audio features: sample-rate, "
                                 "loudness, and duration. If any of these are significantly greater than zero, and the "
-                                "plots suggest some correlation, this very likely suggests bias within your data set, "
+                                "plots suggest some correlation, this very likely suggests bias within your dataset, "
                                 "and this needs to be addressed.", w=0)
         self.pdf.ln(15)
         current_y = self.pdf.get_y()
