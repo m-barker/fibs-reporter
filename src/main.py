@@ -1,6 +1,7 @@
 import argparse
 import pandas as pd
 import src
+import warnings
 
 from src.Report_builder import ReportBuilder
 from src.Argparser import configure_argparse
@@ -46,7 +47,7 @@ def get_df(csv_file_name: str, output_var_name: str) -> pd.DataFrame:
     headers = list(df.columns)
     if output_var_name not in headers:
         raise ValueError(f"Error - no column in provided csv file called {output_var_name}"
-                         f"Column names in provided file are: {headers}")
+                         f" Column names in provided file are: {headers}")
 
     if len(pd.unique(df[output_var_name])) == 1:
         raise ValueError("Error - all output variable observations are identical")
@@ -115,7 +116,7 @@ def main() -> None:
     Main executable file of the toolkit
     :return: None
     """
-
+    print("Validating input...")
     config.define_constants()
 
     args = parse_inputs()
@@ -133,11 +134,17 @@ def main() -> None:
 
     main_df, test_df = validate_and_init(args)
 
-    db = DataBuilder(main_df, output_var, audio_col, test_df)
-
-    report = ReportBuilder(db, audio=audio)
+    """
+    Suppressing warnings as to not confuse the user (warning are from sklearn)
+    Couple of lines of code taken from official Python documentation on suppressing warnings
+    that can be found at: https://docs.python.org/3/library/warnings.html
+    """
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        print("Done!")
+        db = DataBuilder(main_df, output_var, audio_col, test_df)
+        report = ReportBuilder(db, audio=audio)
 
 
 if __name__ == '__main__':
     main()
-
